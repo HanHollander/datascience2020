@@ -1,11 +1,7 @@
 import pandas as pd
 import numpy as np
-import scipy.stats as sst
-from scipy.interpolate import make_interp_spline, BSpline
 import matplotlib.pylab as plt
-import seaborn as sns
 import os
-import scipy.fftpack as sfft
 
 from cycler import cycler
 
@@ -44,15 +40,16 @@ for i, row in raw_labeled_data.iterrows():
 # variables
 n = 1000  # number of sample points
 dt = 1/200  # sample spacing or 1 / sample rate, for example sample rate is 200 then sample spacing is 1 / 200
-max_freq = 6  # filled in manually
+max_freq = 60  # filled in manually
 nyquist = max_freq < 1 / (2 * dt)  # we need the sample rate to be bigger than two times the maximum frequency
 
 # function
 t = np.linspace(0, n * dt, n)
-s = np.sin(2 * 2 * np.pi * t) + 0.8 * np.sin(4 * 2 * np.pi * t) + 0.5 * np.sin(6 * 2 * np.pi * t)
+s = np.sin(2 * 2 * np.pi * t) + 0.8 * np.sin(4 * 2 * np.pi * t) + \
+    0.5 * np.sin(6 * 2 * np.pi * t) + 0.2 * np.sin(60 * 2 * np.pi * t)
 
 # fast fourier transform
-fft = sfft.fft(s - np.mean(s))  # substract mean to get rid of DC-offset
+fft = np.fft.fft(s - np.mean(s))  # substract mean to get rid of DC-offset
 freq = np.linspace(0, 1 / (2 * dt), n // 2)  # max frequency (by nyquist) is [0, 1 / 2dt] with n / 2 samples
 
 fig = plt.figure()
@@ -72,9 +69,7 @@ for i in range(0, 6):
     n = len(classified_signal[i])
     dt = 1/50
 
-    t = np.linspace(0, n * dt, n)
-
-    fft = sfft.fft(signal - np.mean(signal))
+    fft = np.fft.fft(signal - np.mean(signal))
     freq = np.linspace(0, 1 / (2 * dt), n // 2)
 
     location = int('32' + str(i + 1))
@@ -93,9 +88,7 @@ for i in range(0, 6):
     n = len(classified_signal[i])
     dt = 1/50
 
-    t = np.linspace(0, n * dt, n)
-
-    fft = sfft.fft(signal - np.mean(signal))
+    fft = np.fft.fft(signal - np.mean(signal))
     freq = np.linspace(0, 1 / (2 * dt), n // 2)
 
     fig = plt.figure()
