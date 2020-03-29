@@ -59,15 +59,27 @@ def DTW(a, b):
 
     return cumdist[an, bn]
 
-model = KNeighborsClassifier(n_neighbors=2, n_jobs=-1, metric=DTW)
+model_raw = KNeighborsClassifier(n_neighbors=2, n_jobs=-1, metric=DTW)
+model_feat = KNeighborsClassifier(n_neighbors=2, n_jobs=-1, metric=DTW)
 
-#model.fit(raw_X_train, y_train.to_numpy().ravel())
-model.fit(feat_X_train, y_train.to_numpy().ravel())
-#label = model.predict(raw_X_test)
-label = model.predict(feat_X_test)
 
-print(classification_report(label, y_test.to_numpy().ravel(),
+model_raw.fit(raw_X_train, y_train.to_numpy().ravel())
+model_feat.fit(feat_X_train, y_train.to_numpy().ravel())
+label_raw = model_raw.predict(raw_X_test)
+label_feat = model_raw.predict(feat_X_test)
+
+print("Featured data classification report")
+print(classification_report(label_feat, y_test.to_numpy().ravel(),
                             target_names=[l for l in CLASSES.values()]))
 
-conf_mat = confusion_matrix(label, y_test.to_numpy().ravel())
+print("Featured data confusion matrix")
+conf_mat = confusion_matrix(label_feat, y_test.to_numpy().ravel())
+print(conf_mat)
+
+print("Raw signal classification report")
+print(classification_report(label_raw, y_test.to_numpy().ravel(),
+                            target_names=[l for l in CLASSES.values()]))
+
+print("Raw signal confusion matrix")
+conf_mat = confusion_matrix(label_raw, y_test.to_numpy().ravel())
 print(conf_mat)
