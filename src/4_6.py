@@ -59,10 +59,18 @@ ax.title.set_text('4.6 a) Frequency spectrum of\nsin(4 pi t) + 0,8 sin(8 pi t) +
 ax.set_xlabel('Frequency')
 ax.set_ylabel('Amplitude')
 plt.savefig(wd[:-4] + '/img/4_6_sine.png')
+print('The frequency spectrum of the sine wave can be found in 4_6_sine.png. This was used to test the implementation.')
+print('The variables are: n = 1000, dt = 1/200 (= 1/fs), max_freq = 60 and nyquist = 1/2dt.')
+print('The sine is: sin(2 * 2 pi t) + 0.8 sin(4 * 2 pi t) + 0.5 sin(6 * 2 pi t) + 0.2 sin(60 * 2 pi t)')
 
 fig = plt.figure()
 fig.suptitle('4.6 a) Frequency spectrum of body_acc_z_train (classified)', size=12)
 
+print('')
+print('a)')
+print('')
+print('\tThe frequency spectra of the signal can be found in 4_6_signal.png, as well as in 4_6_[class].png.')
+print('\tThe variables are: n = [length of class data] anddt = 1/50 (= 1/fs).')
 for i in range(0, 6):
     signal = classified_signal[i]
 
@@ -98,3 +106,9 @@ for i in range(0, 6):
     ax.set_xlabel('Frequency')
     ax.set_ylabel('Amplitude')
     plt.savefig(wd[:-4] + '/img/4_6_' + CLASSES[i + 1] + '.png')
+
+print('')
+print('b)')
+print('')
+print('\tAgain, similar to 4.5, we can mostly discriminate between the three walking and the three stationary classes\n'
+      '\twhile discriminating between the classes within those categories might be difficult.')

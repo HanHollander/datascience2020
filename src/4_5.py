@@ -96,4 +96,7 @@ plt.savefig(wd[:-4] + '/img/4_5_dists.png')
 print('')
 print('b)')
 print('')
-print('TODO')  # TODO
+print('\tIt would be quite difficult to discriminate between the classes purely based on these distributions. If we\n'
+      '\tlook at small differences we could discriminate all three walking activities separately (based on steepness\n'
+      '\tand height of the distribution, but between the three stationary activities it would be very difficult. We\n'
+      '\tcan see this in the plot in 4_5_dists.png.')
