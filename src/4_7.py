@@ -42,16 +42,20 @@ def highpass(lowcut, fs, order=5):
 
  # Sample rate and desired cutoff frequencies (in Hz).
 fs = 50
-lowcut = 3
-highcut = 12
+lowcut = 2
+highcut = 5
 order = 4
+
 
 original_signal = np.zeros(470528)
 for index, row in raw_labeled_data.iterrows():
     eff = index * 64
     original_signal[eff:eff + 64] = row.values[:-1]
 
-plt.figure(1)
+n = len(original_signal)
+dt = 1/fs
+
+fig1 = plt.figure()
 plt.clf()
 
 # Plot butter-band-filter.
@@ -59,27 +63,55 @@ b, a = butter_bandpass(lowcut, highcut, fs, order=order)
 y = lfilter(b, a , original_signal)
 plt.plot(y)
 plt.xlabel('datapoints')
-plt.title('Butter-band filter')
+plt.title('Butter-band filter on Signal')
 plt.grid(True)
 plt.axis('tight')
 
-plt.figure(2)
+fft = np.fft.fft(y - np.mean(y))
+freq = np.linspace(0, 1 / (2 * dt), n // 2)
+
+ax = plt.figure().add_subplot(111)
+ax.plot(freq, 2 / n * np.abs(fft[:n // 2]))
+ax.title.set_text('4.7 Frequency spectrum of Butter-band filter')
+ax.set_xlabel('Frequency')
+ax.set_ylabel('Amplitude')
+#plt.savefig(wd[:-4] + '/img/4_6_' + CLASSES[i + 1] + '.png')
+
+fig2 = plt.figure()
 # Plot lowpass-filter.
 b, a = lowpass(highcut, fs, order=order)
 y = lfilter(b, a , original_signal)
 plt.plot(y)
 plt.xlabel('datapoints')
-plt.title('Lowpass filter')
+plt.title('Lowpass filter on Signal')
 plt.grid(True)
 plt.axis('tight')
 
-plt.figure(3)
+fft = np.fft.fft(y - np.mean(y))
+freq = np.linspace(0, 1 / (2 * dt), n // 2)
+
+ax = plt.figure().add_subplot(111)
+ax.plot(freq, 2 / n * np.abs(fft[:n // 2]))
+ax.title.set_text('4.7 Frequency spectrum of Lowpass filter')
+ax.set_xlabel('Frequency')
+ax.set_ylabel('Amplitude')
+
+fig3 = plt.figure()
 # Plot highpass-filter.
 b, a = highpass(lowcut, fs, order=order)
 y = lfilter(b, a , original_signal)
 plt.plot(y)
 plt.xlabel('datapoints')
-plt.title('Highpass filter')
+plt.title('Highpass filter on Signal')
 plt.grid(True)
 plt.axis('tight')
+
+fft = np.fft.fft(y - np.mean(y))
+freq = np.linspace(0, 1 / (2 * dt), n // 2)
+
+ax = plt.figure().add_subplot(111)
+ax.plot(freq, 2 / n * np.abs(fft[:n // 2]))
+ax.title.set_text('4.7 Frequency spectrum of Highpass filter')
+ax.set_xlabel('Frequency')
+ax.set_ylabel('Amplitude')
 plt.show()
