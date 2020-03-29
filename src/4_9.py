@@ -3,8 +3,10 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from sklearn.neighbors import NearestNeighbors
-from statsmodels.tsa.stattools import adfuller
+from statsmodels.tsa.stattools import adfuller, acf, pacf
+from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.tests.results import results_arima
 
 wd = os.getcwd()
 data_file_path = wd[:-4] + '/data/KBESTS/GlobalLandTemperaturesByCountry.csv'
@@ -205,3 +207,48 @@ for pair in pairs:
     neigh.fit(t1)
     dists, inds = neigh.kneighbors(t2)
     print('\t{} {} {}'.format(pair[0], pair[1], np.mean(dists)))
+
+for country in countries:
+    residual = decomposed_temps[country].resid.values
+    lag_auto_corr = acf(residual, nlags=10)
+    lag_par_auto_corr = pacf(residual, nlags=10, method='ols')
+
+    fig = plt.figure()
+    # Plot ACF:
+    ax = fig.add_subplot(121)
+    ax.plot(lag_auto_corr)
+    ax.axhline(y=0, linestyle='--', color='black')
+    ax.axhline(y=-1.96 / np.sqrt(len(residual)), linestyle='--', color='black')
+    ax.axhline(y=1.96 / np.sqrt(len(residual)), linestyle='--', color='black')
+
+    # Plot PACF:
+    ax = fig.add_subplot(122)
+    ax.plot(lag_par_auto_corr)
+    ax.axhline(y=0, linestyle='--', color='black')
+    ax.axhline(y=-1.96 / np.sqrt(len(residual)), linestyle='--', color='black')
+    ax.axhline(y=1.96 / np.sqrt(len(residual)), linestyle='--', color='black')
+    fig.suptitle('PACF (left) and ACF (right) plot for ' + country)
+    plt.tight_layout()
+    plt.savefig(wd[:-4] + '/img/4_9_PACF_ACF_' + country + '.png')
+
+# Norway p=1.6, q=1.4; Finland p=1.6, q=1.4; Singapore p=1.9, q=1.6; Cambodia p=1.8, q=1.5
+
+my_country = countries[0]
+residual = decomposed_temps[my_country].resid.values
+ar_model = ARIMA(residual, order=(2,0,0))
+ma_model = ARIMA(residual, order=(0,0,1))
+arima_model = ARIMA(residual, order=(2,1,0))
+
+results_arima = arima_model.fit(disp=-1)
+results_ar = ar_model.fit(disp=-1)
+results_ma = ma_model.fit(disp=-1)
+
+print(results_ar.summary())
+print(results_ma.summary())
+print(results_arima.summary())
+
+print('Prediction of next month temperature with AR-model with order (2,0,0)')
+print("Last 10 months temperature of Norway")
+print(residual[-10:])
+print("Prediction")
+print(results_ar.predict(end=0))
